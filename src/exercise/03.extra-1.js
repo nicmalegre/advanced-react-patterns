@@ -5,6 +5,14 @@ import * as React from 'react'
 import {Switch} from '../switch'
 
 const ToggleContext = React.createContext()
+ToggleContext.displayName = 'ToggleContext'
+
+const useToggleContext = () => {
+  const context = React.useContext(ToggleContext)
+
+  if (context) return context
+  throw new Error('ToggleContext is not available.')
+}
 
 function Toggle({children}) {
   const [on, setOn] = React.useState(false)
@@ -18,36 +26,38 @@ function Toggle({children}) {
 }
 
 function ToggleOn({children}) {
-  const {on} = React.useContext(ToggleContext)
+  const {on} = useToggleContext()
 
   return on ? children : null
 }
 
 function ToggleOff({children}) {
-  const {on} = React.useContext(ToggleContext)
+  const {on} = useToggleContext()
 
   return on ? null : children
 }
 
 function ToggleButton(props) {
-  const {on, toggle} = React.useContext(ToggleContext)
+  const {on, toggle} = useToggleContext()
 
   return <Switch on={on} onClick={toggle} {...props} />
 }
 
-function App() {
-  return (
-    <div>
-      <Toggle>
-        <ToggleOn>The button is on</ToggleOn>
-        <ToggleOff>The button is off</ToggleOff>
-        <div>
-          <ToggleButton />
-        </div>
-      </Toggle>
-    </div>
-  )
-}
+const App = () => <ToggleButton />
+
+// function App() {
+//   return (
+//     <div>
+//       <Toggle>
+//         <ToggleOn>The button is on</ToggleOn>
+//         <ToggleOff>The button is off</ToggleOff>
+//         <div>
+//           <ToggleButton />
+//         </div>
+//       </Toggle>
+//     </div>
+//   )
+// }
 
 export default App
 

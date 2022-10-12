@@ -9,7 +9,8 @@ function Toggle({children}) {
   const toggle = () => setOn(!on)
 
   return React.Children.map(children, child => {
-    return React.cloneElement(child, {on, toggle})
+    const isCustomComponent = typeof child.type === 'function'
+    return isCustomComponent ? React.cloneElement(child, {on, toggle}) : child
   })
 }
 
@@ -28,6 +29,7 @@ function App() {
       <Toggle>
         <ToggleOn>The button is on</ToggleOn>
         <ToggleOff>The button is off</ToggleOff>
+        <span>Hello</span>
         <ToggleButton />
       </Toggle>
     </div>
