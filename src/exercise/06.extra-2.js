@@ -2,6 +2,7 @@
 // http://localhost:3000/isolated/exercise/06.js
 
 import * as React from 'react'
+import warning from 'warning'
 import {Switch} from '../switch'
 
 const callAll =
@@ -40,9 +41,29 @@ function useToggle({
   const onIsControlled = controlledOn != null
   const on = onIsControlled ? controlledOn : state.on
 
+  const {current: wasControlled} = React.useRef(onIsControlled)
+  React.useEffect(() => {
+    warning(
+      !(onIsControlled && !wasControlled),
+      'A component is changing an uncontrolled input to be controlled. This is likely caused by the value changing from undefined to a defined value, which should not happen.',
+    )
+    warning(
+      !(!onIsControlled && wasControlled),
+      'Warning: A component is changing a controlled input to be uncontrolled. This is likely caused by the value changing from a defined to undefined, which should not happen.',
+    )
+  }, [onIsControlled, wasControlled])
+
+  const hasOnChange = Boolean(onChange)
+  React.useEffect(() => {
+    warning(
+      !(onIsControlled && !hasOnChange),
+      'Warning: Failed prop type: You provided a `on` prop to a form field without an `onChange` handler. This will render a read-only field.',
+    )
+  }, [onIsControlled, hasOnChange])
+
   const dispatchWithOnChange = action => {
     if (!onIsControlled) dispatch(action)
-    onChange(reducer({...state, on}, action), action)
+    onChange?.(reducer({...state, on}, action), action)
   }
 
   const toggle = () => dispatchWithOnChange({type: actionTypes.toggle})
